@@ -27,36 +27,30 @@
     SELECT NO_COMMANDE, TO_CHAR(DATE_COMMANDE,'DD') AS DATECOM FROM COMMANDES COM JOIN CLIENTS C ON COM.CODE_CLIENT=C.CODE_CLIENT WHERE TO_CHAR(DATE_COMMANDE,'MM/YYYY')='08/2008' AND (PAYS='Royaume-Uni' OR VILLE='Toulouse');
 
 -- 6-Donner le code et le pays des clients ayant commandÃ© le produit nÂ°31.
--- Afficher le pays sous cette forme : Aut. (3 premiÃšres lettres + point).    
-    SELECT DISTINCT C.CODE_CLIENT, RPAD(SUBSTR(C.PAYS,1,3),4,'.') FROM CLIENTS C JOIN COMMANDES COM ON C.CODE_CLIENT=COM.CODE_CLIENT JOIN DETAILS_COMMANDES D ON COM.NO_COMMANDE=D.NO_COMMANDE WHERE D.REF_PRODUIT=31;
+-- Afficher le pays sous cette forme : Aut. (3 premiÃ¨res lettres + point).
+    
+    SELECT DISTINCT C.CODE_CLIENT, C.PAYS FROM CLIENTS C JOIN COMMANDES COM ON C.CODE_CLIENT=COM.CODE_CLIENT JOIN DETAILS_COMMANDES D ON COM.NO_COMMANDE=D.NO_COMMANDE WHERE D.REF_PRODUIT=31;
     
 -- 7-Donner le code et la sociÃ©tÃ© des clients de catÃ©gorie 1 avec le numÃ©ro de leurs commandes
 -- (on veut afficher tous les clients mÃªme ceux qui n'ont pas encore de commande).
 -- Trier les lignes par numÃ©ro de commande.
-    SELECT C.CODE_CLIENT, SOCIETE, NO_COMMANDE FROM CLIENTS C LEFT JOIN COMMANDES COM ON C.CODE_CLIENT=COM.CODE_CLIENT WHERE C.CATEGORIE=1 ORDER BY COM.NO_COMMANDE ASC NULLS FIRST;
-
+    SELECT C.CODE_CLIENT, SOCIETE, NO_COMMANDE FROM CLIENTS C JOIN COMMANDES COM ON C.CODE_CLIENT=COM.CODE_CLIENT WHERE C.CATEGORIE=1 ORDER BY COM.NO_COMMANDE ASC NULLS FIRST;
     
+    SELECT CODE_CLIENT FROM CLIENTS WHERE CATEGORIE=1 AND CODE_CLIENT NOT IN (SELECT CODE_CLIENT FROM COMMANDES);
     
 -- 8-RequÃªte 4 avec une jointure externe (anti-jointure).
-     SELECT CODE_CLIENT FROM CLIENTS WHERE PAYS='Espagne' MINUS SELECT C.CODE_CLIENT FROM CLIENTS C RIGHT JOIN COMMANDES COM on C.CODE_CLIENT=COM.CODE_CLIENT;
-    
+
 -- 9-RequÃªte 4 avec un NOT EXISTS.
-    SELECT CODE_CLIENT FROM CLIENTS C WHERE PAYS='Espagne' AND NOT EXISTS (SELECT * FROM COMMANDES COM WHERE C.CODE_CLIENT=COM.CODE_CLIENT);
-   
 
 -- 10-Donner la rÃ©fÃ©rence des produits dont le nom contient 'Sauce'
 -- ou qui ont Ã©tÃ© commandÃ© avec une quantitÃ© comprise entre 50 et 60.
-    
-    SELECT DISTINCT P.REF_PRODUIT, NOM_PRODUIT FROM PRODUITS P JOIN DETAILS_COMMANDES D ON P.REF_PRODUIT=D.REF_PRODUIT WHERE NOM_PRODUIT LIKE '%Sauce%' OR QUANTITE BETWEEN 50 AND 60;
+
 -- 11-Donner les produits commandÃ©s en mÃªme quantitÃ© dans une mÃªme commande
 -- (uniquement si la quantitÃ© est supÃ©rieure Ã  45).
-    
-    SELECT DISTINCT COM1.REF_PRODUIT FROM DETAILS_COMMANDES COM1 JOIN DETAILS_COMMANDES COM2 ON COM1.REF_PRODUIT=COM2.REF_PRODUIT WHERE COM1.QUANTITE=COM2.QUANTITE AND COM1.NO_COMMANDE=COM2.NO_COMMANDE AND COM2.QUANTITE>45;
--- 12-Donner pour chaque produit, les produits qui coutent 10 euros de plus.
+
+-- 12-Donner pour chaque produit, les produits qui coutent 10â‚¬ de plus.
 -- Afficher les rÃ©fÃ©rences et les prix des produits
 -- Trier par produit.
-    
-   SELECT DISTINCT P1.REF_PRODUIT, P1.PRIX_UNITAIRE FROM PRODUITS P1 JOIN PRODUITS P2 ON P1.REF_PRODUIT!=P2.REF_PRODUIT AND P2.PRIX_UNITAIRE=P1.PRIX_UNITAIRE+10 ORDER BY P1.REF_PRODUIT ASC;
 
 -- 13-Donner le nombre de clients qui ont commandÃ© le produit nÂ° 31.
     SELECT COUNT(CODE_CLIENT) AS NB_CLIENT FROM COMMANDES COM JOIN DETAILS_COMMANDES D ON COM.NO_COMMANDE=D.NO_COMMANDE WHERE D.REF_PRODUIT=31;
@@ -86,7 +80,7 @@
 -- 20-Donner le numÃ©ro et la date des commandes avec au moins 4 rÃ©fÃ©rences diffÃ©rentes.
     SELECT NO_COMMANDE, TO_CHAR(DATE_COMMANDE, 'DD/MM/YYYY') FROM COMMANDES WHERE NO_COMMANDE IN (SELECT NO_COMMANDE FROM DETAILS_COMMANDES GROUP BY (NO_COMMANDE)  HAVING COUNT(DISTINCT REF_PRODUIT)>=4);
     
--- 21-Donner le numÃ©ro des commandes contenant tous les produits qui coutent 105â¬.
+-- 21-Donner le numÃ©ro des commandes contenant tous les produits qui coutent 105â‚¬.
 
 -- 22-Donner la rÃ©fÃ©rence des produits qui sont dans toutes les commandes de ERNSH.
 
